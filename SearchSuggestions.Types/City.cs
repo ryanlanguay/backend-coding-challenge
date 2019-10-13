@@ -24,5 +24,10 @@
         /// Gets or sets the city longitude
         /// </summary>
         public double Longitude { get; set; }
+
+        /// <summary>
+        /// Gets or sets the region (state/province) name
+        /// </summary>
+        public string RegionName { get; set; }
     }
 }

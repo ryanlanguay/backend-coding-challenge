@@ -4,30 +4,24 @@
     using System.Collections.Generic;
     using System.Data;
     using System.IO;
-    using System.Linq;
-    using Aspose.Cells;
     using Types;
 
     public class DataFileLoader
     {
         private const string filePath = @"Data\cities_canada-usa.tsv";
-
+        private const string adminCode1Path = @"Data\admin1CodesASCII.tsv";
+        private Dictionary<string, string> stateCodeMapping;
+        
         public List<City> Cities { get; private set; }
 
         public void LoadData()
         {
+            this.LoadStateData();
+
             this.Cities = new List<City>();
-
-            var dataFilePath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
-            if (!File.Exists(dataFilePath))
-            {
-                throw new FileNotFoundException("The data file could not be found!", dataFilePath);
-            }
-
-            var workbook = new Workbook(dataFilePath);
-            var dataCells = workbook.Worksheets.First().Cells;
-
-            var data = dataCells.ExportDataTable(0, 0, dataCells.Rows.Count, dataCells.Columns.Count);
+            
+            var dataParser = new TabSeparatedDataParser(Path.Combine(Directory.GetCurrentDirectory(), filePath));
+            var data = dataParser.ParseData();
 
             foreach (DataRow dataRow in data.Rows)
             {
@@ -35,11 +29,28 @@
                 {
                     Id = Convert.ToInt64(dataRow["id"]),
                     Name = dataRow["name"].ToString(),
-                    Latitude = Convert.ToDouble(dataRow["latitude"]),
-                    Longitude = Convert.ToDouble(dataRow["longitude"])
+                    Latitude = Convert.ToDouble(dataRow["lat"]),
+                    Longitude = Convert.ToDouble(dataRow["long"]),
+                    RegionName = this.stateCodeMapping[$"{dataRow["country"]}.{dataRow["admin1"]}"]
                 };
 
                 this.Cities.Add(city);
+            }
+        }
+
+        private void LoadStateData()
+        {
+            this.stateCodeMapping = new Dictionary<string, string>();
+
+            var dataParser = new TabSeparatedDataParser(Path.Combine(Directory.GetCurrentDirectory(), adminCode1Path));
+            var data = dataParser.ParseData();
+
+            foreach (DataRow dataRow in data.Rows)
+            {
+                var geoNameCode = dataRow["code"].ToString();
+                var name = dataRow["name"].ToString();
+
+                this.stateCodeMapping.Add(geoNameCode, name);
             }
         }
     }
