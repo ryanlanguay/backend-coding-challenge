@@ -1,5 +1,6 @@
 ﻿namespace SearchSuggestions.Data
 {
+    using System;
     using System.Data;
     using System.IO;
 
@@ -10,7 +11,7 @@
 
         public TabSeparatedDataParser(string filePath)
         {
-            this.filePath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+            this.filePath = Path.Combine(AppContext.BaseDirectory, filePath);
         }
 
         public DataTable ParseData()
