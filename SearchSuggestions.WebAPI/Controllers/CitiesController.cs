@@ -1,9 +1,9 @@
 ﻿namespace SearchSuggestions.WebAPI.Controllers
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using SearchEngine;
     using Types;
 
     /// <summary>
@@ -13,6 +13,17 @@
     [ApiController]
     public class CitiesController : ControllerBase
     {
+        private readonly CitySearchEngine searchEngine;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CitiesController" /> class
+        /// </summary>
+        /// <param name="searchEngine">The search engine instance</param>
+        public CitiesController(CitySearchEngine searchEngine)
+        {
+            this.searchEngine = searchEngine;
+        }
+
         /// <summary>
         /// Gets city suggestions given search criteria
         /// </summary>
@@ -31,7 +42,9 @@
             if (string.IsNullOrWhiteSpace(query))
                 return this.BadRequest("Query parameter is required");
 
-            return this.Ok(new List<string>());
+            var results = await this.searchEngine.Search(query, new LocationInformation(latitude, longitude));
+
+            return this.Ok(results);
         }
     }
 }

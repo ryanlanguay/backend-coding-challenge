@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SearchSuggestions.Data\SearchSuggestions.Data.csproj" />
     <ProjectReference Include="..\SearchSuggestions.Types\SearchSuggestions.Types.csproj" />
   </ItemGroup>
 

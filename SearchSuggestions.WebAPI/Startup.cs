@@ -12,6 +12,7 @@ namespace SearchSuggestions.WebAPI
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Middleware;
+    using SearchEngine;
     using Serilog;
     using Swashbuckle.AspNetCore.Swagger;
 
@@ -37,6 +38,10 @@ namespace SearchSuggestions.WebAPI
             });
 
             services.AddMemoryCache();
+
+            services.AddScoped<IIndexedSearchDataRepository, IndexedSearchDataRepository>();
+            services.AddScoped<ISearchDataRepository, SearchDataRepository>();
+            services.AddScoped<CitySearchEngine>();
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
