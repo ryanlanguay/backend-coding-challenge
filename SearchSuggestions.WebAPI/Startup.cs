@@ -4,10 +4,14 @@ namespace SearchSuggestions.WebAPI
     using System;
     using System.IO;
     using System.Reflection;
+    using System.Threading.Tasks;
+    using Data;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Middleware;
     using Serilog;
     using Swashbuckle.AspNetCore.Swagger;
 
@@ -17,7 +21,10 @@ namespace SearchSuggestions.WebAPI
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(ExceptionFilter));
+            });
 
             services.AddSwaggerGen(c =>
             {
@@ -29,6 +36,8 @@ namespace SearchSuggestions.WebAPI
                     $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
             });
 
+            services.AddMemoryCache();
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.File(@"logs\log.txt", rollingInterval: RollingInterval.Day)
@@ -36,7 +45,7 @@ namespace SearchSuggestions.WebAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IMemoryCache cache)
         {
             if (env.IsDevelopment())
             {
@@ -57,6 +66,9 @@ namespace SearchSuggestions.WebAPI
 
             // Add Serilog to the .NET Core main logging pipeline
             loggerFactory.AddSerilog();
+
+            // Initialize databases asynchronously
+            Task.Run(() => DataInitializer.InitializeData(cache));
         }
     }
 }

@@ -1,0 +1,10 @@
+2019-10-13 21:49:24.989 -04:00 [INF] Request starting HTTP/2.0 GET https://localhost:44373/index.html  
+2019-10-13 21:49:25.472 -04:00 [INF] Request finished in 488.0868ms 200 text/html
+2019-10-13 21:49:25.525 -04:00 [INF] Request starting HTTP/2.0 GET https://localhost:44373/swagger-ui-bundle.js  
+2019-10-13 21:49:25.526 -04:00 [INF] Request starting HTTP/2.0 GET https://localhost:44373/swagger-ui-standalone-preset.js  
+2019-10-13 21:49:25.567 -04:00 [INF] Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2019-10-13 21:49:25.567 -04:00 [INF] Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2019-10-13 21:49:25.573 -04:00 [INF] Request finished in 47.6423ms 200 application/javascript
+2019-10-13 21:49:25.574 -04:00 [INF] Request finished in 47.6424ms 200 application/javascript
+2019-10-13 21:49:25.797 -04:00 [INF] Request starting HTTP/2.0 GET https://localhost:44373/swagger/v1/swagger.json  
+2019-10-13 21:49:25.931 -04:00 [INF] Request finished in 133.4984ms 200 application/json;charset=utf-8

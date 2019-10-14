@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using System.IO;
     using Types;
 
     public class DataFileLoader
@@ -20,7 +19,7 @@
 
             this.Cities = new List<City>();
             
-            var dataParser = new TabSeparatedDataParser(Path.Combine(Directory.GetCurrentDirectory(), filePath));
+            var dataParser = new TabSeparatedDataParser(filePath);
             var data = dataParser.ParseData();
 
             foreach (DataRow dataRow in data.Rows)
@@ -42,7 +41,7 @@
         {
             this.stateCodeMapping = new Dictionary<string, string>();
 
-            var dataParser = new TabSeparatedDataParser(Path.Combine(Directory.GetCurrentDirectory(), adminCode1Path));
+            var dataParser = new TabSeparatedDataParser(adminCode1Path);
             var data = dataParser.ParseData();
 
             foreach (DataRow dataRow in data.Rows)

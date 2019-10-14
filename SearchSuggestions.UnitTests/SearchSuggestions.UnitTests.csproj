@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -19,12 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\admin1CodesASCII.tsv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Data\cities_canada-usa.tsv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <DataFiles Include="..\Data\*.tsv" />
   </ItemGroup>
+
+  <Target Name="CopyData" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(DataFiles)" DestinationFolder="$(OutDir)\Data" />
+  </Target>
 
 </Project>

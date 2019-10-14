@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SearchSuggestions.Data
+﻿namespace SearchSuggestions.Data
 {
     using System.Data;
     using System.IO;
-    using System.Runtime.CompilerServices;
 
     internal class TabSeparatedDataParser
     {
+        private const char TabSeparator = '\t';
         private readonly string filePath;
 
         public TabSeparatedDataParser(string filePath)
         {
-            this.filePath = filePath;
+            this.filePath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
         }
 
         public DataTable ParseData()
@@ -26,7 +22,7 @@ namespace SearchSuggestions.Data
 
             var fileContent = File.ReadAllLines(this.filePath);
 
-            var headers = fileContent[0].Split('\t');
+            var headers = fileContent[0].Split(TabSeparator);
             foreach (var header in headers)
             {
                 dataTable.Columns.Add(header);
@@ -35,7 +31,7 @@ namespace SearchSuggestions.Data
             for (var i = 1; i < fileContent.Length; i++)
             {
                 var row = dataTable.NewRow();
-                var dataColumns = fileContent[i].Split('\t');
+                var dataColumns = fileContent[i].Split(TabSeparator);
                 for (var j = 0; j < dataTable.Columns.Count; j++)
                 {
                     row[j] = dataColumns[j];

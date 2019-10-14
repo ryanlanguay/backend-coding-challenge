@@ -19,13 +19,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SearchSuggestions.Data\SearchSuggestions.Data.csproj" />
+    <ProjectReference Include="..\SearchSuggestions.SearchEngine\SearchSuggestions.SearchEngine.csproj" />
     <ProjectReference Include="..\SearchSuggestions.Types\SearchSuggestions.Types.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\cities_canada-usa.tsv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <DataFiles Include="..\Data\*.tsv" />
   </ItemGroup>
+
+  <Target Name="CopyData" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(DataFiles)" DestinationFolder="$(OutDir)\Data" />
+  </Target>
 
 </Project>
