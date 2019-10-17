@@ -15,6 +15,7 @@ namespace SearchSuggestions.WebAPI
     using SearchEngine;
     using Serilog;
     using Swashbuckle.AspNetCore.Swagger;
+    using Types;
 
     public class Startup
     {
@@ -41,6 +42,8 @@ namespace SearchSuggestions.WebAPI
 
             services.AddScoped<IIndexedSearchDataRepository, IndexedSearchDataRepository>();
             services.AddScoped<ISearchDataRepository, SearchDataRepository>();
+            services.AddScoped<IScorer<string>, CityNameMatchScorer>();
+            services.AddScoped<IScorer<LocationInformation>, LocationMatchScorer>();
             services.AddScoped<CitySearchEngine>();
 
             Log.Logger = new LoggerConfiguration()

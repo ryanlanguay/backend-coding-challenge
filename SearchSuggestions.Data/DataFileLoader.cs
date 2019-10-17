@@ -28,9 +28,9 @@
                 {
                     Id = Convert.ToInt64(dataRow["id"]),
                     Name = dataRow["name"].ToString(),
-                    Latitude = Convert.ToDouble(dataRow["lat"]),
-                    Longitude = Convert.ToDouble(dataRow["long"]),
-                    RegionName = this.stateCodeMapping[$"{dataRow["country"]}.{dataRow["admin1"]}"]
+                    LocationInformation = new LocationInformation(Convert.ToDouble(dataRow["lat"]), Convert.ToDouble(dataRow["long"])),
+                    RegionName = this.stateCodeMapping[$"{dataRow["country"]}.{dataRow["admin1"]}"],
+                    CountryCode = dataRow["country"].ToString()
                 };
 
                 this.Cities.Add(city);

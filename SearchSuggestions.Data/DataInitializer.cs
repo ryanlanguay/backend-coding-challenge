@@ -21,7 +21,7 @@
             var indexedCache = new Dictionary<string, List<long>>(StringComparer.InvariantCultureIgnoreCase);
             foreach (var city in fileLoader.Cities)
             {
-                var maxLength = Math.Max(city.Name.Length - 1, 2);
+                var maxLength = Math.Max(city.Name.Length, 2);
                 var nGrams = await StringNGramParser.GetNGrams(city.Name, 2, maxLength);
                 foreach (var ngram in nGrams)
                 {
