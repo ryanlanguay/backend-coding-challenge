@@ -1,7 +1,6 @@
 ﻿namespace SearchSuggestions.SearchEngine
 {
     using System;
-    using System.Linq;
     using System.Threading.Tasks;
     using Types;
 
@@ -17,21 +16,16 @@
                     throw new ArgumentOutOfRangeException(nameof(actual));
                 }
 
-                var latitudeDiff = expected.Latitude.HasValue
-                    ? GetPercentageDifference(expected.Latitude.Value, actual.Latitude.Value)
-                    : 0.0d;
+                if (!expected.Latitude.HasValue && !expected.Longitude.HasValue)
+                {
+                    return 0.0d;
+                }
 
-                var longitudeDiff = expected.Longitude.HasValue
-                    ? GetPercentageDifference(expected.Longitude.Value, actual.Longitude.Value)
-                    : 0.0d;
+                var latitudeError = MathHelper.GetPercentError(expected.Latitude.Value, actual.Latitude.Value);
+                var longitudeError = MathHelper.GetPercentError(expected.Longitude.Value, actual.Longitude.Value);
 
-                return (latitudeDiff + longitudeDiff) / 2.0d;
+                return (2 - longitudeError - latitudeError) * 0.1d;
             });
-        }
-
-        private static double GetPercentageDifference(double a, double b)
-        {
-            return Math.Abs(a - b) / (new[] {a, b}.Average());
         }
     }
 }

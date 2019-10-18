@@ -1,0 +1,52 @@
+﻿[
+  {
+    "Id": 1,
+    "Name": "London",
+    "LocationInformation": {
+      "Latitude": 42.98339,
+      "Longitude": -81.23304
+    },
+    "RegionName": "Ontario",
+    "CountryCode": "CA"
+  },
+  {
+    "Id": 2,
+    "Name": "Flin Flon",
+    "LocationInformation": {
+      "Latitude": 54.76824,
+      "Longitude": -101.86497
+    },
+    "RegionName": "Manitoba",
+    "CountryCode": "CA"
+  },
+  {
+    "Id": 3,
+    "Name": "Bluewater",
+    "LocationInformation": {
+      "Latitude": 43.46679,
+      "Longitude": -81.59977
+    },
+    "RegionName": "Ontario",
+    "CountryCode": "CA"
+  },
+  {
+    "Id": 4,
+    "Name": "Châteauguay",
+    "LocationInformation": {
+      "Latitude": 45.38338,
+      "Longitude": -73.74919
+    },
+    "RegionName": "Quebec",
+    "CountryCode": "CA"
+  },
+  {
+    "Id": 5,
+    "Name": "Thurmont",
+    "LocationInformation": {
+      "Latitude": 39.62371,
+      "Longitude": -77.41082
+    },
+    "RegionName": "Maryland",
+    "CountryCode": "US"
+  }
+]

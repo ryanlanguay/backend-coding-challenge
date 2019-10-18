@@ -32,19 +32,21 @@
         /// <param name="longitude">The longitude</param>
         /// <returns>The search results</returns>
         [HttpGet("suggestions")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CitySuggestionResults), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<CitySuggestionResults>> Search(
             [FromQuery(Name = "q")] string query,
             [FromQuery] double? latitude,
             [FromQuery] double? longitude)
         {
-            if (string.IsNullOrWhiteSpace(query))
-                return this.BadRequest("Query parameter is required");
-
             var results = await this.searchEngine.Search(query, new LocationInformation(latitude, longitude));
 
-            return this.Ok(results);
+            if (!results.IsSuccess)
+            {
+                return this.BadRequest(results.Errors);
+            }
+
+            return this.Ok(results.Results);
         }
     }
 }

@@ -25,7 +25,7 @@
             return nGrams.ToArray();
         }
 
-        public static async Task<int> GetLongestNGramMatch(string x, string y)
+        public static async Task<string> GetLongestNGramMatch(string x, string y)
         {
             var maxLength = Math.Min(x.Length, y.Length);
             for (var i = maxLength; i > 0; i--)
@@ -33,11 +33,12 @@
                 var nGrams1 = await GetNGrams(x, i);
                 var nGrams2 = await GetNGrams(y, i);
 
-                if (nGrams1.Intersect(nGrams2).Any())
-                    return i;
+                var intersection = nGrams1.Intersect(nGrams2);
+                if (intersection.Any())
+                    return intersection.First();
             }
 
-            return 0;
+            return null;
         }
 
         private static async Task<IEnumerable<string>> GetNGrams(string s, int length)

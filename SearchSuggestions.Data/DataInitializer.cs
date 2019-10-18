@@ -4,11 +4,13 @@
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Extensions.Caching.Memory;
+    using Serilog;
 
     public static class DataInitializer
     {
         public static async void InitializeData(IMemoryCache cache)
         {
+            Log.Logger.Information("Data loading begin.");
             // First load the cities from the data files
             var fileLoader = new DataFileLoader();
             fileLoader.LoadData();
@@ -37,6 +39,8 @@
             }
 
             cache.Set(CacheKeys.IndexCacheKey, indexedCache);
+
+            Log.Logger.Information("Data loading end.");
         }
     }
 }

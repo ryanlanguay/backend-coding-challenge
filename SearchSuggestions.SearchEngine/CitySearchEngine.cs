@@ -26,14 +26,23 @@
             this.locationScorer = locationScorer;
         }
 
-        public async Task<CitySuggestionResults> Search(string query, LocationInformation locationInformation)
+        public async Task<SearchResult> Search(string query, LocationInformation locationInformation)
         {
-            var minLength = Math.Max(2, query.Length - 2);
+            if (!this.ValidateSearchRequest(query, locationInformation, out var errors))
+            {
+                return new SearchResult
+                {
+                    Errors = errors,
+                    Results = null
+                };
+            }
+            
+            var minLength = query.Length - 1;
             var queryNgrams = await StringNGramParser.GetNGrams(query, minLength, query.Length);
             var matchingCities = this.indexedSearchDataRepository.GetMatchingCities(queryNgrams);
 
             if (!matchingCities.Any())
-                return new CitySuggestionResults();
+                return new SearchResult();
 
             // We have some matches; get the scores for them
             var cities = this.searchDataRepository.Get(matchingCities);
@@ -43,28 +52,55 @@
             {
                 var searchScore = await this.queryScorer.GetMatchScore(query, city.Name);
                 var locationScore = await this.locationScorer.GetMatchScore(locationInformation, city.LocationInformation);
-                var totalScore = searchScore;
-
-                if (locationInformation.Latitude.HasValue && locationInformation.Longitude.HasValue)
-                {
-                    totalScore = (0.75 * searchScore + 0.25 * locationScore) / (searchScore + locationScore);
-                }
-                else if (locationInformation.Latitude.HasValue || locationInformation.Longitude.HasValue)
-                {
-                    totalScore = (0.5 * searchScore + 0.5 * locationScore) / (searchScore + locationScore);
-                }
+                var totalScore = MathHelper.GetBoundedValue(0, searchScore + locationScore, 1);
 
                 suggestions.Add(new CitySuggestionResult
                 {
                     Latitude = city.LocationInformation.Latitude.GetValueOrDefault(),
                     Longitude = city.LocationInformation.Longitude.GetValueOrDefault(),
                     Name = city.DisplayName,
+                    NameScore = searchScore,
+                    LocationScore = locationScore,
                     Score = totalScore
                 });
             }
 
-            suggestions = suggestions.OrderByDescending(s => s.Score).ToList();
-            return new CitySuggestionResults { Suggestions = suggestions };
+            // When we return the results, we want to return them in descending order of relevance
+            suggestions = suggestions
+                .OrderByDescending(s => s.NameScore)
+                .ThenByDescending(s => s.LocationScore)
+                .ToList();
+
+            return new SearchResult
+            {
+                Results = new CitySuggestionResults() {Suggestions = suggestions}
+            };
+        }
+
+        private bool ValidateSearchRequest(
+            string query, 
+            LocationInformation locationInformation,
+            out List<string> errors)
+        {
+            errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
+            {
+                errors.Add("A query parameter of at least 2 is required.");
+                return false;
+            }
+
+            if (locationInformation != null)
+            {
+                if (locationInformation.Latitude.HasValue && !locationInformation.Longitude.HasValue
+                    || !locationInformation.Latitude.HasValue && locationInformation.Longitude.HasValue)
+                {
+                    errors.Add("Only one of latitude or longitude provided. Either both or neither must be provided.");
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

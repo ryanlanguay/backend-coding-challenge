@@ -15,15 +15,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SearchSuggestions.Data\SearchSuggestions.Data.csproj" />
+    <ProjectReference Include="..\SearchSuggestions.SearchEngine\SearchSuggestions.SearchEngine.csproj" />
     <ProjectReference Include="..\SearchSuggestions.Types\SearchSuggestions.Types.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <DataFiles Include="..\Data\*.tsv" />
+    <TestDataFiles Include=".\TestData\TestData.json" />
   </ItemGroup>
 
   <Target Name="CopyData" AfterTargets="AfterBuild">
     <Copy SourceFiles="@(DataFiles)" DestinationFolder="$(OutDir)\Data" />
+    <Copy SourceFiles="@(TestDataFiles)" DestinationFolder="$(OutDir)" />
   </Target>
 
 </Project>
