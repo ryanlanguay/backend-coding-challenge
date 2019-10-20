@@ -24,7 +24,8 @@
                 var latitudeError = MathHelper.GetPercentDifference(expected.Latitude.Value, actual.Latitude.Value);
                 var longitudeError = MathHelper.GetPercentDifference(expected.Longitude.Value, actual.Longitude.Value);
 
-                return (longitudeError + latitudeError) * SearchScoringFactors.LocationScoringFactor;
+                var totalSimilarity = 1 - latitudeError - longitudeError;
+                return Math.Max(totalSimilarity, 0) * SearchScoringFactors.LocationScoringFactor;
             });
         }
     }

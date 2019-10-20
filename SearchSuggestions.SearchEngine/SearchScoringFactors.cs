@@ -4,7 +4,7 @@
     {
         public const double LocationScoringFactor = 0.1d;
 
-        public const double MaximumSearchScore = 0.9d;
+        public const double MaximumSearchScore = 0.85d;
 
         public const double SearchStartingScore = 0.1d;
 

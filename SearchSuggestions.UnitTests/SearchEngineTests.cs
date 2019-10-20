@@ -42,6 +42,15 @@
         }
 
         [TestMethod]
+        public async Task Search_TestNoAccent_NoResults()
+        {
+            var searchText = "Chateau";
+            var results = await searchEngine.Search(searchText, new LocationInformation(null, null));
+            Assert.IsTrue(results.IsSuccess);
+            Assert.AreEqual(0, results.Results.Suggestions.Count);
+        }
+
+        [TestMethod]
         public async Task Search_ExactMatch_1Result()
         {
             var searchText = "Flin Flon";
@@ -51,7 +60,7 @@
 
             var match = results.Results.Suggestions[0];
             Assert.AreEqual("Flin Flon, Manitoba, CA", match.Name);
-            Assert.AreEqual(0.9, match.Score);
+            Assert.AreEqual(0.85, match.Score);
         }
 
         [TestMethod]
@@ -63,6 +72,7 @@
             Assert.AreEqual(5, results.Results.Suggestions.Count);
             Assert.AreEqual("London, Ontario, CA", results.Results.Suggestions[0].Name);
             Assert.AreEqual("London, Kentucky, US", results.Results.Suggestions[1].Name);
+            Assert.AreEqual(results.Results.Suggestions[0].Score, results.Results.Suggestions[1].Score);
             Assert.AreEqual("London, Ohio, US", results.Results.Suggestions[2].Name);
             Assert.AreEqual("Flin Flon, Manitoba, CA", results.Results.Suggestions[3].Name);
             Assert.AreEqual("Thurmont, Maryland, US", results.Results.Suggestions[4].Name);
@@ -82,6 +92,36 @@
 
         }
 
+        #endregion
+        #region Location
+        [TestMethod]
+        public async Task Search_CanadaLocation_5Results()
+        {
+            var searchText = "lon";
+            var results = await searchEngine.Search(searchText, new LocationInformation(43.70011, -79.4163));
+            Assert.IsTrue(results.IsSuccess);
+            Assert.AreEqual(5, results.Results.Suggestions.Count);
+            Assert.AreEqual("London, Ontario, CA", results.Results.Suggestions[0].Name);
+            Assert.AreEqual("London, Ohio, US", results.Results.Suggestions[1].Name);
+            Assert.AreNotEqual(results.Results.Suggestions[0].Score, results.Results.Suggestions[1].Score);
+            Assert.AreEqual("London, Kentucky, US", results.Results.Suggestions[2].Name);
+            Assert.AreEqual("Flin Flon, Manitoba, CA", results.Results.Suggestions[3].Name);
+            Assert.AreEqual("Thurmont, Maryland, US", results.Results.Suggestions[4].Name);
+        }
+
+        [TestMethod]
+        public async Task Search_USLocation_5Results()
+        {
+            var searchText = "lon";
+            var results = await searchEngine.Search(searchText, new LocationInformation(37, -84));
+            Assert.IsTrue(results.IsSuccess);
+            Assert.AreEqual(5, results.Results.Suggestions.Count);
+            Assert.AreEqual("London, Kentucky, US", results.Results.Suggestions[0].Name);
+            Assert.AreEqual("London, Ohio, US", results.Results.Suggestions[1].Name);
+            Assert.AreEqual("London, Ontario, CA", results.Results.Suggestions[2].Name);
+            Assert.AreEqual("Flin Flon, Manitoba, CA", results.Results.Suggestions[3].Name);
+            Assert.AreEqual("Thurmont, Maryland, US", results.Results.Suggestions[4].Name);
+        }
         #endregion
         #region Errors
         [TestMethod]

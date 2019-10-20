@@ -1,6 +1,5 @@
 ﻿namespace SearchSuggestions.SearchEngine
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -28,7 +27,7 @@
 
         public async Task<SearchResult> Search(string query, LocationInformation locationInformation)
         {
-            if (!this.ValidateSearchRequest(query, locationInformation, out var errors))
+            if (!ValidateSearchRequest(query, locationInformation, out var errors))
             {
                 return new SearchResult
                 {
@@ -68,6 +67,8 @@
             // When we return the results, we want to return them in descending order of relevance
             suggestions = suggestions
                 .OrderByDescending(s => s.Score)
+                .ThenByDescending(s => s.NameScore)
+                .ThenByDescending(s => s.LocationScore)
                 .ToList();
 
             return new SearchResult
@@ -76,7 +77,7 @@
             };
         }
 
-        private bool ValidateSearchRequest(
+        private static bool ValidateSearchRequest(
             string query, 
             LocationInformation locationInformation,
             out List<string> errors)
@@ -100,8 +101,8 @@
                 }
 
                 // The values provided are not in the valid range
-                if (MathHelper.IsInRange(-90, locationInformation.Latitude.Value, 90)
-                    || MathHelper.IsInRange(-180, locationInformation.Longitude.Value, 180))
+                if (!MathHelper.IsInRange(-90, locationInformation.Latitude.Value, 90)
+                    || !MathHelper.IsInRange(-180, locationInformation.Longitude.Value, 180))
                 {
                     errors.Add("Invalid latitude or longitude value. Latitudes are between -90 and 90, longitudes are between -180 and 180.");
                     return false;
