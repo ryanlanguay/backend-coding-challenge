@@ -67,8 +67,7 @@
 
             // When we return the results, we want to return them in descending order of relevance
             suggestions = suggestions
-                .OrderByDescending(s => s.NameScore)
-                .ThenByDescending(s => s.LocationScore)
+                .OrderByDescending(s => s.Score)
                 .ToList();
 
             return new SearchResult
@@ -90,12 +89,21 @@
                 return false;
             }
 
-            if (locationInformation != null)
+            if (locationInformation != null && (locationInformation.Latitude.HasValue || locationInformation.Longitude.HasValue))
             {
+                // Only one of the two values is provided
                 if (locationInformation.Latitude.HasValue && !locationInformation.Longitude.HasValue
                     || !locationInformation.Latitude.HasValue && locationInformation.Longitude.HasValue)
                 {
                     errors.Add("Only one of latitude or longitude provided. Either both or neither must be provided.");
+                    return false;
+                }
+
+                // The values provided are not in the valid range
+                if (MathHelper.IsInRange(-90, locationInformation.Latitude.Value, 90)
+                    || MathHelper.IsInRange(-180, locationInformation.Longitude.Value, 180))
+                {
+                    errors.Add("Invalid latitude or longitude value. Latitudes are between -90 and 90, longitudes are between -180 and 180.");
                     return false;
                 }
             }

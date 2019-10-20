@@ -21,10 +21,10 @@
                     return 0.0d;
                 }
 
-                var latitudeError = MathHelper.GetPercentError(expected.Latitude.Value, actual.Latitude.Value);
-                var longitudeError = MathHelper.GetPercentError(expected.Longitude.Value, actual.Longitude.Value);
+                var latitudeError = MathHelper.GetPercentDifference(expected.Latitude.Value, actual.Latitude.Value);
+                var longitudeError = MathHelper.GetPercentDifference(expected.Longitude.Value, actual.Longitude.Value);
 
-                return (2 - longitudeError - latitudeError) * 0.1d;
+                return (longitudeError + latitudeError) * SearchScoringFactors.LocationScoringFactor;
             });
         }
     }

@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
@@ -29,15 +30,60 @@
                 new LocationMatchScorer());
         }
 
+        #region No Location
         [TestMethod]
-        public async Task Search_ValidText_Results()
+        public async Task Search_ValidText_1Result()
         {
-            var searchText = "Londo";
+            var searchText = "teau";
             var results = await searchEngine.Search(searchText, new LocationInformation(null, null));
             Assert.IsTrue(results.IsSuccess);
-            Assert.AreEqual(2, results.Results.Suggestions.Count);
+            Assert.AreEqual(1, results.Results.Suggestions.Count);
+            Assert.AreEqual("Châteauguay, Quebec, CA", results.Results.Suggestions[0].Name);
         }
 
+        [TestMethod]
+        public async Task Search_ExactMatch_1Result()
+        {
+            var searchText = "Flin Flon";
+            var results = await searchEngine.Search(searchText, new LocationInformation(null, null));
+            Assert.IsTrue(results.IsSuccess);
+            Assert.AreEqual(1, results.Results.Suggestions.Count);
+
+            var match = results.Results.Suggestions[0];
+            Assert.AreEqual("Flin Flon, Manitoba, CA", match.Name);
+            Assert.AreEqual(0.9, match.Score);
+        }
+
+        [TestMethod]
+        public async Task Search_ValidText_5Results()
+        {
+            var searchText = "lon";
+            var results = await searchEngine.Search(searchText, new LocationInformation(null, null));
+            Assert.IsTrue(results.IsSuccess);
+            Assert.AreEqual(5, results.Results.Suggestions.Count);
+            Assert.AreEqual("London, Ontario, CA", results.Results.Suggestions[0].Name);
+            Assert.AreEqual("London, Kentucky, US", results.Results.Suggestions[1].Name);
+            Assert.AreEqual("London, Ohio, US", results.Results.Suggestions[2].Name);
+            Assert.AreEqual("Flin Flon, Manitoba, CA", results.Results.Suggestions[3].Name);
+            Assert.AreEqual("Thurmont, Maryland, US", results.Results.Suggestions[4].Name);
+        }
+
+        [TestMethod]
+        public async Task Search_ValidText_4Results()
+        {
+            var searchText = "flon";
+            var results = await searchEngine.Search(searchText, new LocationInformation(null, null));
+            Assert.IsTrue(results.IsSuccess);
+            Assert.AreEqual(4, results.Results.Suggestions.Count);
+            Assert.AreEqual("Flin Flon, Manitoba, CA", results.Results.Suggestions[0].Name);
+            Assert.AreEqual("London, Ontario, CA", results.Results.Suggestions[1].Name);
+            Assert.AreEqual("London, Kentucky, US", results.Results.Suggestions[2].Name);
+            Assert.AreEqual("London, Ohio, US", results.Results.Suggestions[3].Name);
+
+        }
+
+        #endregion
+        #region Errors
         [TestMethod]
         public async Task Search_NoText_Error()
         {
@@ -71,5 +117,28 @@
             results = await searchEngine.Search(searchText, location);
             Assert.IsFalse(results.IsSuccess);
         }
+
+        [TestMethod]
+        public async Task Search_InvalidLatitudesAndLongitudes_Error()
+        {
+            var searchText = "Londo";
+            var location = new LocationInformation(-91, 0);
+            var results = await searchEngine.Search(searchText, location);
+            Assert.IsFalse(results.IsSuccess);
+
+            location = new LocationInformation(91, 0);
+            results = await searchEngine.Search(searchText, location);
+            Assert.IsFalse(results.IsSuccess);
+
+            location = new LocationInformation(0, -181);
+            results = await searchEngine.Search(searchText, location);
+            Assert.IsFalse(results.IsSuccess);
+
+            location = new LocationInformation(0, 181);
+            results = await searchEngine.Search(searchText, location);
+            Assert.IsFalse(results.IsSuccess);
+        }
+
+        #endregion
     }
 }

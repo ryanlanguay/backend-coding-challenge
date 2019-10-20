@@ -48,5 +48,25 @@
     },
     "RegionName": "Maryland",
     "CountryCode": "US"
+  },
+  {
+    "Id": 6,
+    "Name": "London",
+    "LocationInformation": {
+      "Latitude": 37.12898,
+      "Longitude": -84.08326
+    },
+    "RegionName": "Kentucky",
+    "CountryCode": "US"
+  },
+  {
+    "Id": 7,
+    "Name": "London",
+    "LocationInformation": {
+      "Latitude": 39.88645,
+      "Longitude": -83.44825
+    },
+    "RegionName": "Ohio",
+    "CountryCode": "US"
   }
 ]
