@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SearchSuggestions.SearchEngine
+﻿namespace SearchSuggestions.SearchEngine
 {
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Interface representing scoring class
+    /// Interface representing a class for scoring
     /// </summary>
-    /// <typeparam name="T">The type of the expected and actual values</typeparam>
+    /// <typeparam name="T">The type of the received and actual values</typeparam>
     public interface IScorer<in T>
     {
-        Task<double> GetMatchScore(T expected, T actual);
+        /// <summary>
+        /// Given a received result and the actual result, compute the match score
+        /// </summary>
+        /// <param name="received">The received value</param>
+        /// <param name="actual">The actual value</param>
+        /// <returns>The score</returns>
+        Task<double> GetMatchScore(T received, T actual);
     }
 }

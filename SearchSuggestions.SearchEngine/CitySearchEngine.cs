@@ -1,18 +1,45 @@
 ﻿namespace SearchSuggestions.SearchEngine
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Data;
     using Types;
 
+    /// <summary>
+    /// Main search engine class
+    /// Used to search for cities by name and location
+    /// </summary>
     public class CitySearchEngine
     {
+        /// <summary>
+        /// The indexed data repository
+        /// </summary>
         private readonly IIndexedSearchDataRepository indexedSearchDataRepository;
+
+        /// <summary>
+        /// The main search data repository (un-indexed)
+        /// </summary>
         private readonly ISearchDataRepository searchDataRepository;
+
+        /// <summary>
+        /// The query (name) scorer
+        /// </summary>
         private readonly IScorer<string> queryScorer;
+
+        /// <summary>
+        /// The location scorer
+        /// </summary>
         private readonly IScorer<LocationInformation> locationScorer;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CitySearchEngine" /> class
+        /// </summary>
+        /// <param name="searchDataRepository">The search data repository</param>
+        /// <param name="indexedSearchDataRepository">The indexed data repository</param>
+        /// <param name="queryScorer">The query scorer</param>
+        /// <param name="locationScorer">The location scorer</param>
         public CitySearchEngine(
             ISearchDataRepository searchDataRepository,
             IIndexedSearchDataRepository indexedSearchDataRepository,
@@ -25,8 +52,15 @@
             this.locationScorer = locationScorer;
         }
 
+        /// <summary>
+        /// Searches for matching cities
+        /// </summary>
+        /// <param name="query">The query string. Can be a complete or partial city name</param>
+        /// <param name="locationInformation">The searcher's location information</param>
+        /// <returns>The results of the search</returns>
         public async Task<SearchResult> Search(string query, LocationInformation locationInformation)
         {
+            // Validate the request; if it's invalid, we stop here
             if (!ValidateSearchRequest(query, locationInformation, out var errors))
             {
                 return new SearchResult
@@ -36,7 +70,8 @@
                 };
             }
             
-            var minLength = query.Length - 1;
+            // We use the most of the provided search criteria to get more relevant results
+            var minLength = Math.Max(2, query.Length - 1);
             var queryNgrams = await StringNGramParser.GetNGrams(query, minLength, query.Length);
             var matchingCities = this.indexedSearchDataRepository.GetMatchingCities(queryNgrams);
 
@@ -84,12 +119,15 @@
         {
             errors = new List<string>();
 
+            // We don't want to search if the user has only input one character
+            // (the search won't yield meaningful results in that case)
             if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
             {
                 errors.Add("A query parameter of at least 2 is required.");
                 return false;
             }
 
+            // Location information is optional
             if (locationInformation != null && (locationInformation.Latitude.HasValue || locationInformation.Longitude.HasValue))
             {
                 // Only one of the two values is provided

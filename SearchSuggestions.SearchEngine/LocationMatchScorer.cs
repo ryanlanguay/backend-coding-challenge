@@ -4,9 +4,14 @@
     using System.Threading.Tasks;
     using Types;
 
+    /// <summary>
+    /// Scoring class for location information
+    /// <see cref="IScorer{T}"/>
+    /// </summary>
     public class LocationMatchScorer : IScorer<LocationInformation>
     {
-        public Task<double> GetMatchScore(LocationInformation expected, LocationInformation actual)
+        /// <inheritdoc cref="IScorer{T}" />
+        public Task<double> GetMatchScore(LocationInformation received, LocationInformation actual)
         {
             return Task.Run(() =>
             {
@@ -16,15 +21,16 @@
                     throw new ArgumentOutOfRangeException(nameof(actual));
                 }
 
-                if (!expected.Latitude.HasValue && !expected.Longitude.HasValue)
+                if (!received.Latitude.HasValue && !received.Longitude.HasValue)
                 {
+                    // We received no location information; no bonus scoring used
                     return 0.0d;
                 }
 
-                var latitudeError = MathHelper.GetPercentDifference(expected.Latitude.Value, actual.Latitude.Value);
-                var longitudeError = MathHelper.GetPercentDifference(expected.Longitude.Value, actual.Longitude.Value);
+                var latitudeDifference = MathHelper.GetPercentDifference(received.Latitude.Value, actual.Latitude.Value);
+                var longitudeDifference = MathHelper.GetPercentDifference(received.Longitude.Value, actual.Longitude.Value);
 
-                var totalSimilarity = 1 - latitudeError - longitudeError;
+                var totalSimilarity = 1 - latitudeDifference - longitudeDifference;
                 return Math.Max(totalSimilarity, 0) * SearchScoringFactors.LocationScoringFactor;
             });
         }

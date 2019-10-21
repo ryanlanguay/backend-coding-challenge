@@ -5,15 +5,29 @@
     using Microsoft.AspNetCore.Mvc.Filters;
     using Serilog;
 
+    /// <summary>
+    /// Middleware filter to catch all uncaught exceptions
+    /// </summary>
     internal class ExceptionFilter : IExceptionFilter
     {
+        /// <summary>
+        /// The current environment
+        /// </summary>
         private readonly IHostingEnvironment environment;
 
+        /// <summary>
+        /// Initializes the default instance of the <see cref="ExceptionFilter" /> class
+        /// </summary>
+        /// <param name="env">The current hosting environment</param>
         public ExceptionFilter(IHostingEnvironment env)
         {
             this.environment = env;
         }
 
+        /// <summary>
+        /// Method called when handling exceptions
+        /// </summary>
+        /// <param name="context">The current exception context</param>
         public void OnException(ExceptionContext context)
         {
             Log.Logger.Error(context.Exception, "An error occurred.");

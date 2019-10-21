@@ -4,20 +4,25 @@
     using System.Threading.Tasks;
     using Data;
 
+    /// <summary>
+    /// Scoring class for city names
+    /// <seealso cref="IScorer{T}"/>
+    /// </summary>
     public class CityNameMatchScorer : IScorer<string>
     {
-        public async Task<double> GetMatchScore(string expected, string actual)
+        /// <inheritdoc cref="IScorer{T}" />
+        public async Task<double> GetMatchScore(string received, string actual)
         {
             // Early exit: if the search criteria matches the value exactly, return the maximum possible value
-            if (string.Equals(expected, actual, StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(received, actual, StringComparison.InvariantCultureIgnoreCase))
                 return SearchScoringFactors.MaximumSearchScore;
 
             // Check the ratio of the longest n-gram to the length of the actual string
-            var longestMatch = await StringNGramParser.GetLongestNGramMatch(expected.ToLower(), actual.ToLower());
+            var longestMatch = await StringNGramParser.GetLongestNGramMatch(received.ToLower(), actual.ToLower());
             var matchLengthFactor = Convert.ToDouble(longestMatch.Length) / Convert.ToDouble(actual.Length);
 
             // Bonus if the longest n-gram is actually the search criteria
-            var longestMatchBonus = string.Equals(longestMatch, expected, StringComparison.InvariantCultureIgnoreCase) 
+            var longestMatchBonus = string.Equals(longestMatch, received, StringComparison.InvariantCultureIgnoreCase) 
                 ? SearchScoringFactors.LongestMatchBonus 
                 : 0d;
 
