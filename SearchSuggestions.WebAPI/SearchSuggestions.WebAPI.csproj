@@ -32,8 +32,8 @@
     <Copy SourceFiles="@(DataFiles)" DestinationFolder="$(OutDir)\Data" />
   </Target>
 
-  <Target Name="CopyDataAfterPublish" AfterTargets="AfterPublish">
-    <Copy SourceFiles="@(DataFiles)" DestinationFolder="$(OutDir)\Data" />
+  <Target Name="CopyDataAfterPublish" AfterTargets="Publish">
+    <Copy SourceFiles="@(DataFiles)" DestinationFolder="$(PublishDir)\Data" />
   </Target>
 
 </Project>
