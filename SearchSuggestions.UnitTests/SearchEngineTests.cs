@@ -9,11 +9,21 @@
     using SearchEngine;
     using Types;
 
+    /// <summary>
+    /// City search engine tests
+    /// </summary>
     [TestClass]
     public class SearchEngineTests
     {
+        /// <summary>
+        /// The search engine instance
+        /// </summary>
         private static CitySearchEngine searchEngine;
 
+        /// <summary>
+        /// Initializes the test data and repositories
+        /// </summary>
+        /// <param name="context">The test context</param>
         [ClassInitialize]
         public static void Initialize(TestContext context)
         {
@@ -31,6 +41,10 @@
         }
 
         #region No Location
+        /// <summary>
+        /// Valid search, returns a single result
+        /// </summary>
+        /// <returns>Void</returns>
         [TestMethod]
         public async Task Search_ValidText_1Result()
         {
@@ -41,6 +55,11 @@
             Assert.AreEqual("Châteauguay, Quebec, CA", results.Results.Suggestions[0].Name);
         }
 
+        /// <summary>
+        /// Valid search, but criteria does not have an accent on "a"
+        /// This will return no results, because the search is more restrictive
+        /// </summary>
+        /// <returns>Void</returns>
         [TestMethod]
         public async Task Search_TestNoAccent_NoResults()
         {
@@ -50,6 +69,24 @@
             Assert.AreEqual(0, results.Results.Suggestions.Count);
         }
 
+        /// <summary>
+        /// Exact string match for a name that occurs 3 times in the data set
+        /// </summary>
+        /// <returns>Void</returns>
+        [TestMethod]
+        public async Task Search_ExactMatch_3Results()
+        {
+            var searchText = "London";
+            var results = await searchEngine.Search(searchText, new LocationInformation(null, null));
+            Assert.IsTrue(results.IsSuccess);
+            Assert.AreEqual(3, results.Results.Suggestions.Count);
+            Assert.IsTrue(results.Results.Suggestions.All(r => r.Score == 0.85));
+        }
+
+        /// <summary>
+        /// Exact string match for a location
+        /// </summary>
+        /// <returns>Void</returns>
         [TestMethod]
         public async Task Search_ExactMatch_1Result()
         {
@@ -63,6 +100,11 @@
             Assert.AreEqual(0.85, match.Score);
         }
 
+        /// <summary>
+        /// Match a string that occurs 5x in the data
+        /// Ensure that n-gram matches of the same length return the same score
+        /// </summary>
+        /// <returns>Void</returns>
         [TestMethod]
         public async Task Search_ValidText_5Results()
         {
@@ -78,6 +120,10 @@
             Assert.AreEqual("Thurmont, Maryland, US", results.Results.Suggestions[4].Name);
         }
 
+        /// <summary>
+        /// Match a string that occurs 4x in the data
+        /// </summary>
+        /// <returns>Void</returns>
         [TestMethod]
         public async Task Search_ValidText_4Results()
         {
@@ -94,6 +140,11 @@
 
         #endregion
         #region Location
+        /// <summary>
+        /// Match a string that occurs 5x in the data, with location in Canada
+        /// Ensure that n-gram matches of the same length DO NOT return the same score (because of the location factor)
+        /// </summary>
+        /// <returns>Void</returns>
         [TestMethod]
         public async Task Search_CanadaLocation_5Results()
         {
@@ -109,6 +160,11 @@
             Assert.AreEqual("Thurmont, Maryland, US", results.Results.Suggestions[4].Name);
         }
 
+        /// <summary>
+        /// Match a string that occurs 5x in the data, with location in US
+        /// Ensure that n-gram matches of the same length DO NOT return the same score (because of the location factor)
+        /// </summary>
+        /// <returns>Void</returns>
         [TestMethod]
         public async Task Search_USLocation_5Results()
         {
@@ -124,6 +180,10 @@
         }
         #endregion
         #region Errors
+        /// <summary>
+        /// Error case: search criteria is null, empty, or only white space
+        /// </summary>
+        /// <returns>Void</returns>
         [TestMethod]
         public async Task Search_NoText_Error()
         {
@@ -137,6 +197,10 @@
             Assert.IsFalse(results.IsSuccess);
         }
 
+        /// <summary>
+        /// Error case: search criteria is too short (1 character)
+        /// </summary>
+        /// <returns>Void</returns>
         [TestMethod]
         public async Task Search_TooShortText_Error()
         {
@@ -145,6 +209,10 @@
             Assert.IsFalse(results.IsSuccess);
         }
 
+        /// <summary>
+        /// Error case: only one of latitude or longitude provided
+        /// </summary>
+        /// <returns>Void</returns>
         [TestMethod]
         public async Task Search_InvalidLocation_Error()
         {
@@ -158,6 +226,10 @@
             Assert.IsFalse(results.IsSuccess);
         }
 
+        /// <summary>
+        /// Error case: invalid latitude or longitude values
+        /// </summary>
+        /// <returns>Void</returns>
         [TestMethod]
         public async Task Search_InvalidLatitudesAndLongitudes_Error()
         {
