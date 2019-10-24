@@ -71,7 +71,8 @@
             }
             
             // We use the most of the provided search criteria to get more relevant results
-            var minLength = Math.Max(2, query.Length - 1);
+            // This means we cannot account for typos, but reduces the noise of the results we return
+            var minLength = Math.Max(2, query.Length);
             var queryNgrams = await StringNGramParser.GetNGrams(query, minLength, query.Length);
             var matchingCities = this.indexedSearchDataRepository.GetMatchingCities(queryNgrams);
 
