@@ -9,14 +9,14 @@
     internal static class MathHelper
     {
         /// <summary>
-        /// Gets the percent difference between two numbers
+        /// Gets the cartesian distance between two points
         /// </summary>
-        /// <param name="expected">The expected value</param>
-        /// <param name="actual">The actual value</param>
-        /// <returns>The percent difference</returns>
-        public static double GetPercentDifference(double expected, double actual)
+        /// <param name="p1">The first point</param>
+        /// <param name="p2">The second point</param>
+        /// <returns>The distance</returns>
+        public static double GetCartesianDistance((double x, double y) p1, (double x, double y) p2)
         {
-            return Math.Abs(expected - actual) / Math.Abs(Average(expected, actual));
+            return Math.Sqrt(Math.Pow(p2.x - p1.x, 2) + Math.Pow(p2.y - p1.y, 2));
         }
 
         /// <summary>

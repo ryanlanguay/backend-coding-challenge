@@ -25,5 +25,15 @@
         /// Gets or sets the longitude
         /// </summary>
         public double? Longitude { get; set; }
+
+        /// <summary>
+        /// Deconstructs the location to a tuple
+        /// </summary>
+        /// <returns>The tuple</returns>
+        public void Deconstruct(out double lat, out double lon)
+        {
+            lat = this.Latitude.GetValueOrDefault();
+            lon = this.Longitude.GetValueOrDefault();
+        }
     }
 }

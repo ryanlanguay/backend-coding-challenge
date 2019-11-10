@@ -27,11 +27,16 @@
                     return 0.0d;
                 }
 
-                var latitudeDifference = MathHelper.GetPercentDifference(received.Latitude.Value, actual.Latitude.Value);
-                var longitudeDifference = MathHelper.GetPercentDifference(received.Longitude.Value, actual.Longitude.Value);
+                var (x1, y1) = received;
+                var (x2, y2) = actual;
 
-                var totalSimilarity = 1 - latitudeDifference - longitudeDifference;
-                return Math.Max(totalSimilarity, 0) * SearchScoringFactors.LocationScoringFactor;
+                var distance = MathHelper.GetCartesianDistance((x1, y1), (x2, y2));
+                
+                // The shorter the distance, the closer the match, and the higher the score
+                if (distance == 0)
+                    return 1;
+
+                return (1 / distance) * SearchScoringFactors.LocationScoringFactor;
             });
         }
     }
